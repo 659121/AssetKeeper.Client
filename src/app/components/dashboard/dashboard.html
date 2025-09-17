@@ -1,0 +1,39 @@
+<div class="dashboard-container">
+  <!-- Боковая панель -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Система инвентаризации</h3>
+      <p>Пользователь: {{ currentUser?.username }}</p>
+      <p>Роль: {{ getRoleDisplayName() }}</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- Новый синтаксис @for и @if -->
+      @for (item of menuItems; track item.path) {
+        @if (hasAccess(item.roles)) {
+          <a 
+            [routerLink]="item.path" 
+            routerLinkActive="active"
+            class="nav-item">
+            <span class="material-icons">{{ item.icon }}</span>
+            {{ item.label }}
+          </a>
+        }
+      }
+    </nav>
+
+    <!-- Кнопка выхода -->
+    <div class="sidebar-footer">
+      <button (click)="logout()" class="logout-btn">
+        <span class="material-icons">logout</span>
+        Выйти
+      </button>
+    </div>
+  </div>
+
+  <!-- Основное содержимое -->
+  <div class="main-content">
+    <!-- Router outlet для дочерних компонентов -->
+    <router-outlet></router-outlet>
+  </div>
+</div>

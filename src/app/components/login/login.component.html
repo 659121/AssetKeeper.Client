@@ -1,0 +1,51 @@
+<div class="login-container">
+  <div class="login-card">
+    <!-- Логотип -->
+    <div class="logo">
+      <img src="assets/logo.png" alt="Logo" class="logo-image"> <!-- Пока заглушка -->
+      <h2>Система инвентаризации</h2>
+    </div>
+
+    <!-- Форма -->
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="username">Логин:</label>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="username"
+          name="username"
+          required
+          placeholder="Введите ваш логин">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Пароль:</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          placeholder="Введите ваш пароль">
+      </div>
+
+      <!-- Сообщение об ошибке -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Кнопка отправки -->
+      <button type="submit" [disabled]="isLoading" class="submit-btn">
+        {{ isLoading ? 'Загрузка...' : (isLoginMode ? 'Войти' : 'Зарегистрироваться') }}
+      </button>
+    </form>
+
+    <!-- Переключение между логином и регистрацией -->
+    <div class="toggle-mode">
+      <button type="button" (click)="toggleMode()" class="toggle-btn">
+        {{ isLoginMode ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти' }}
+      </button>
+    </div>
+  </div>
+</div>
