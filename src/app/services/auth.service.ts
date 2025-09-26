@@ -34,8 +34,8 @@ export class AuthService {
   private tokenToUser(decodedToken: DecodedToken): User {
     return {
       id: parseInt(decodedToken.sub),
-      username: decodedToken.username,
-      role: decodedToken.role
+      username: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
+      roles: decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || []
     };
   }
 
@@ -117,7 +117,7 @@ export class AuthService {
     const user = this.currentUserValue;
     if (!user) return false;
     
-    return user.role.toLowerCase() === requiredRole.toLowerCase();
+    return user ? user.roles.includes(requiredRole) : false;
   }
 
   // Проверяем любую из требуемых ролей
@@ -126,13 +126,14 @@ export class AuthService {
     if (!user) return false;
     
     // Приводим роли к нижнему регистру для case-insensitive сравнения
-    const userRole = user.role.toLowerCase();
-    return requiredRoles.some(role => role.toLowerCase() === userRole);
+    return requiredRoles.some(role => user.roles.includes(role));
   }
 
   // Проверяем все требуемые роли
   hasAllRoles(requiredRoles: string[]): boolean {
   const user = this.currentUserValue;
-  return user ? requiredRoles.every(role => user.role === role) : false;
+    if (!user) return false;
+    
+    return requiredRoles.every(role => user.roles.includes(role));
   }
 }

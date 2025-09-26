@@ -17,10 +17,10 @@ import { User } from '../../models/auth.models';
 export class Dashboard implements OnInit {
   currentUser: User | null = null;
   menuItems = [
-    { path: '/dashboard/inventory', label: 'Инвентаризация', icon: 'inventory', roles: ['user', 'admin'] },
-    { path: '/dashboard/monitoring', label: 'Мониторинг', icon: 'monitoring', roles: ['user', 'admin'] },
-    { path: '/dashboard/settings', label: 'Настройки', icon: 'settings', roles: ['user', 'admin'] },
-    { path: '/dashboard/admin', label: 'Админ панель', icon: 'admin_panel_settings', roles: ['admin'] }
+    { path: '/dashboard/inventory', label: 'Инвентаризация', icon: 'inventory', roles: ['User', 'Admin'] },
+    { path: '/dashboard/monitoring', label: 'Мониторинг', icon: 'monitoring', roles: ['User', 'Admin'] },
+    { path: '/dashboard/settings', label: 'Настройки', icon: 'settings', roles: ['User', 'Admin'] },
+    { path: '/dashboard/admin', label: 'Админ панель', icon: 'admin_panel_settings', roles: ['Admin'] }
   ];
 
   constructor(private authService: AuthService, private router: Router) {}
@@ -35,7 +35,7 @@ export class Dashboard implements OnInit {
   }
 
   // Получаем отображаемое имя роли
-  getRoleDisplayName(): string {
+  getRolesDisplayName(): string {
     if (!this.currentUser) return '';
     
     const roleNames: { [key: string]: string } = {
@@ -43,7 +43,9 @@ export class Dashboard implements OnInit {
       'Admin': 'Администратор'
     };
     
-    return roleNames[this.currentUser.role.toLowerCase()] || this.currentUser.role;
+    return this.currentUser.roles
+      .map(role => roleNames[role] || role)
+      .join(', ');
   }
 
   // Выход из системы
