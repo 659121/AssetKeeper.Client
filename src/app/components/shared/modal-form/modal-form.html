@@ -1,0 +1,93 @@
+@if (visible) {
+  <div class="modal-overlay" (click)="onOverlayClick($event)">
+    <div 
+      class="modal-content" 
+      [class]="'modal-' + (config.size || 'md')"
+      (click)="$event.stopPropagation()">
+      
+      <div class="modal-header">
+        <h3>{{ config.title }}</h3>
+        <button (click)="onCancel()" class="btn-close">×</button>
+      </div>
+
+      <div class="modal-body">
+        <form class="modal-form">
+          @for (field of config.fields; track trackByField($index, field)) {
+            <div class="form-group">
+              <label [for]="field.key">
+                {{ field.label }}
+                @if (field.required) {
+                  <span class="required">*</span>
+                }
+              </label>
+
+              @switch (field.type) {
+                @case ('text') {
+                  <input
+                    [id]="field.key"
+                    type="text"
+                    [(ngModel)]="formData[field.key]"
+                    [name]="field.key"
+                    [disabled]="isDisabled(field)"
+                    class="form-input">
+                }
+                @case ('number') {
+                  <input
+                    [id]="field.key"
+                    type="number"
+                    [(ngModel)]="formData[field.key]"
+                    [name]="field.key"
+                    [disabled]="isDisabled(field)"
+                    class="form-input">
+                }
+                @case ('select') {
+                  <select
+                    [id]="field.key"
+                    [(ngModel)]="formData[field.key]"
+                    [name]="field.key"
+                    [disabled]="isDisabled(field)"
+                    class="form-input">
+                    <option value="">Выберите...</option>
+                    @for (option of field.options; track option.value) {
+                      <option [value]="option.value">{{ option.label }}</option>
+                    }
+                  </select>
+                }
+                @case ('checkbox') {
+                  <label class="checkbox-label">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="formData[field.key]"
+                      [name]="field.key"
+                      [disabled]="isDisabled(field)">
+                    {{ field.label }}
+                  </label>
+                }
+                @case ('textarea') {
+                  <textarea
+                    [id]="field.key"
+                    [(ngModel)]="formData[field.key]"
+                    [name]="field.key"
+                    [disabled]="isDisabled(field)"
+                    rows="4"
+                    class="form-input"></textarea>
+                }
+              }
+            </div>
+          }
+        </form>
+        <ng-content></ng-content>
+      </div>
+
+      <div class="modal-footer">
+        <button (click)="onCancel()" class="btn-cancel">Отмена</button>
+        <button 
+          (click)="onSave()" 
+          class="btn-save"
+          [disabled]="loading">
+          {{ loading ? 'Сохранение...' : 'Сохранить' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

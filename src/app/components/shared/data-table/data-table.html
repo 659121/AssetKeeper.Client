@@ -1,0 +1,61 @@
+<div class="data-table-container">
+  <!-- Загрузка -->
+  @if (loading) {
+    <div class="loading">Загрузка...</div>
+  }
+
+  <!-- Таблица -->
+  @if (!loading && data.length > 0) {
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            @for (column of config.columns; track column.key) {
+              <th [style.width]="column.width">
+                {{ column.title }}
+              </th>
+            }
+            @if (config.actions && config.actions.length > 0) {
+              <th class="actions-column">Действия</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of data; track item.id) {
+            <tr (click)="onRowClick(item)" class="table-row">
+              @for (column of config.columns; track column.key) {
+                <td>
+                  {{ formatValue(item[column.key], column) }}
+                </td>
+              }
+              @if (config.actions && config.actions.length > 0) {
+                <td class="actions-cell">
+                  <div class="actions">
+                    @for (action of config.actions; track action.name) {
+                      @if (canShowAction(action, item)) {
+                        <button
+                          (click)="onAction(action.name, item, $event)"
+                          class="action-btn"
+                          [style.color]="action.color"
+                          [title]="action.label">
+                          {{ action.icon }}
+                        </button>
+                      }
+                    }
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Пустое состояние -->
+  @if (!loading && data.length === 0) {
+    <div class="empty-state">
+      {{ emptyMessage }}
+    </div>
+  }
+</div>

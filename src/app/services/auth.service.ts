@@ -8,12 +8,11 @@ import { jwtDecode } from 'jwt-decode';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5261/api/auth'; // Замените на ваш URL
+  private apiUrl = 'http://localhost:5261/api/auth';
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
   constructor(private http: HttpClient) {
-    // Проверяем, есть ли пользователь в localStorage
     const storedUser = localStorage.getItem('currentUser');
     this.currentUserSubject = new BehaviorSubject<User | null>(
       storedUser ? JSON.parse(storedUser) : null
@@ -21,7 +20,7 @@ export class AuthService {
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-    // Декодирование JWT токена
+  // Декодирование JWT токена
   private decodeToken(token: string): DecodedToken {
     try {
       return jwtDecode<DecodedToken>(token);
@@ -32,10 +31,26 @@ export class AuthService {
 
   // Преобразование decoded token в User object
   private tokenToUser(decodedToken: DecodedToken): User {
+    // Обрабатываем роль как строку или как массив
+    let roles: string[] = [];
+    
+    const roleClaim = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    
+    if (Array.isArray(roleClaim)) {
+      // Если роль пришла как массив
+      roles = roleClaim;
+    } else if (typeof roleClaim === 'string') {
+      // Если роль пришла как строка
+      roles = [roleClaim];
+    } else if (roleClaim) {
+      // Если роль пришла в другом формате, преобразуем в строку
+      roles = [String(roleClaim)];
+    }
+    
     return {
       id: parseInt(decodedToken.sub),
       username: decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
-      roles: decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || []
+      roles: roles
     };
   }
 
@@ -45,17 +60,14 @@ export class AuthService {
     return decodedToken.exp < currentTime;
   }
 
-  // Получить текущего пользователя
   public get currentUserValue(): User | null {
     return this.currentUserSubject.value;
   }
 
-  // Вход в систему
   login(loginData: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, loginData);
   }
 
-  // Регистрация
   register(registerData: RegisterRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, registerData);
   }
@@ -82,14 +94,12 @@ export class AuthService {
     }
   }
 
-  // Выход из системы
   logout(): void {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('authToken');
     this.currentUserSubject.next(null);
   }
 
-  // Получить токен из localStorage
   getToken(): string | null {
     return localStorage.getItem('authToken');
   }
@@ -112,11 +122,9 @@ export class AuthService {
     }
   }
 
-  // Проверяем роль пользователя
+  // Проверяем одну роль
   hasRole(requiredRole: string): boolean {
     const user = this.currentUserValue;
-    if (!user) return false;
-    
     return user ? user.roles.includes(requiredRole) : false;
   }
 
@@ -125,13 +133,12 @@ export class AuthService {
     const user = this.currentUserValue;
     if (!user) return false;
     
-    // Приводим роли к нижнему регистру для case-insensitive сравнения
     return requiredRoles.some(role => user.roles.includes(role));
   }
 
   // Проверяем все требуемые роли
   hasAllRoles(requiredRoles: string[]): boolean {
-  const user = this.currentUserValue;
+    const user = this.currentUserValue;
     if (!user) return false;
     
     return requiredRoles.every(role => user.roles.includes(role));

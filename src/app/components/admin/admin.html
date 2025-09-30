@@ -1,1 +1,52 @@
-<p>admin works!</p>
+<div class="admin-container">
+  <!-- Заголовок -->
+  <div class="page-header">
+    <h2>{{ title }}</h2>
+    <p>Управление пользователями системы</p>
+  </div>
+
+  <!-- Универсальная таблица -->
+  <app-data-table
+    [data]="data"
+    [config]="tableConfig"
+    [loading]="loading"
+    [emptyMessage]="emptyMessage"
+    (action)="onTableAction($event)"
+    (rowClick)="onRowClick($event)">
+  </app-data-table>
+
+  <!-- Универсальное модальное окно с кастомной секцией для ролей -->
+  <app-modal-form
+    [config]="modalConfig"
+    [data]="selectedUser"
+    [loading]="modalLoading"
+    [visible]="isModalOpen"
+    (save)="onModalSave($event)"
+    (cancel)="onModalCancel()">
+    
+    <!-- Кастомная секция для ролей -->
+    @if (isModalOpen) {
+      <div class="custom-roles-section">
+        <div class="form-group">
+          <label class="roles-label">Роли:</label>
+          <div class="roles-checkboxes">
+            @for (role of availableRoles; track role) {
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  [checked]="isRoleSelected(role)"
+                  (change)="toggleRole(role)"
+                  class="role-checkbox">
+                <span class="checkmark"></span>
+                {{ getRoleDisplayName(role) }}
+              </label>
+            }
+          </div>
+          @if (getSelectedRoles().length === 0) {
+            <div class="roles-error">Выберите хотя бы одну роль</div>
+          }
+        </div>
+      </div>
+    }
+  </app-modal-form>
+</div>
