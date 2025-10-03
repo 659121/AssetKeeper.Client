@@ -144,6 +144,16 @@ body {
   color: #2980b9;
 }
 
+.session-expired-message {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid #ffeaa7;
+  text-align: center;
+}
+
 /* Адаптивность */
 @media (max-width: 480px) {
   .login-container {

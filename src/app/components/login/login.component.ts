@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { LoginRequest, RegisterRequest } from '../../models/auth.models';
 
@@ -14,14 +14,39 @@ import { LoginRequest, RegisterRequest } from '../../models/auth.models';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
-  isLoginMode = true; // true = login, false = register
+export class LoginComponent implements OnInit {
+  isLoginMode = true;
   username = '';
   password = '';
   errorMessage = '';
   isLoading = false;
+  returnUrl = '/dashboard';
+  sessionExpired = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router, private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    const url = new URL(window.location.href);
+    let returnUrl = url.searchParams.get('returnUrl');
+    const reason = url.searchParams.get('reason');
+    
+    // Если returnUrl указывает на login, используем dashboard по умолчанию
+    if (returnUrl && returnUrl.includes('/login')) {
+      returnUrl = '/dashboard';
+    }
+    
+    this.returnUrl = returnUrl || '/dashboard';
+    this.sessionExpired = reason === 'session_expired';
+    
+    //console.log('🔑 Login component initialized:', { 
+    //  returnUrl: this.returnUrl, 
+    //  sessionExpired: this.sessionExpired 
+    //});
+    
+    if (this.sessionExpired) {
+      this.errorMessage = 'Сессия истекла. Пожалуйста, войдите снова.';
+    }
+  }
 
   // Переключение между логином и регистрацией
   toggleMode(): void {
@@ -60,9 +85,18 @@ export class LoginComponent {
 
     this.authService.login(loginData).subscribe({
       next: (response) => {
-        this.authService.setUserData(response.token);
-        this.router.navigate(['/dashboard']);
-        this.isLoading = false;
+        if (this.authService.currentUserValue) {
+          // Используем navigate вместо navigateByUrl для лучшего контроля
+          this.router.navigate([this.returnUrl]).then(success => {
+            if (!success) {
+              this.router.navigate(['/dashboard']);
+            }
+          });
+        } else {
+          this.errorMessage = 'Ошибка авторизации. Попробуйте снова.';
+          console.error('No user data after login');
+        }
+        this.isLoading = false
       },
       error: (error) => {
         this.errorMessage = 'Ошибка входа. Проверьте логин и пароль.';

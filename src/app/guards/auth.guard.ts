@@ -22,6 +22,11 @@ export const authGuard: CanActivateFn = (route, state) => {
   }
 
   // Если пользователь не авторизован, перенаправляем на страницу входа
-  router.navigate(['/login']);
+  router.navigate(['/login'], {
+    queryParams: { 
+      returnUrl: state.url,
+      reason: 'not_authenticated'
+    }
+  });
   return false;
 };

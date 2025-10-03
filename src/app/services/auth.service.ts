@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { LoginRequest, RegisterRequest, AuthResponse, User, DecodedToken } from '../models/auth.models';
 import { jwtDecode } from 'jwt-decode';
 
@@ -56,8 +57,13 @@ export class AuthService {
 
   // Проверка срока действия токена
   private isTokenExpired(decodedToken: DecodedToken): boolean {
-    const currentTime = Math.floor(Date.now() / 1000);
-    return decodedToken.exp < currentTime;
+    try {
+      const tokenExp = decodedToken.exp;
+      const currentTime = Math.floor(Date.now() / 1000);
+      return currentTime > tokenExp;
+    } catch {
+      return true;
+    }
   }
 
   public get currentUserValue(): User | null {
@@ -65,7 +71,12 @@ export class AuthService {
   }
 
   login(loginData: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, loginData);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, loginData).pipe(
+      tap(response => {
+        // Сразу сохраняем данные пользователя при успешном логине
+        this.setUserData(response.token);
+      })
+    );
   }
 
   register(registerData: RegisterRequest): Observable<any> {
@@ -79,6 +90,8 @@ export class AuthService {
       
       // Проверяем срок действия токена
       if (this.isTokenExpired(decodedToken)) {
+        console.log('Token expired at:', new Date(decodedToken.exp * 1000));
+        console.log('Current time:', new Date());
         this.logout();
         throw new Error('Token expired');
       }

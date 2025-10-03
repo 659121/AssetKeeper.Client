@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +10,10 @@ import { RouterOutlet } from '@angular/router';
   `
 })
 export class AppComponent {
-  title = 'inventory-frontend';
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    // Инициализируем аутентификацию при запуске приложения
+    this.authService.initializeAuth();
+  }
 }
