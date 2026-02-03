@@ -31,8 +31,14 @@ export class Admin implements OnInit {
   // Конфигурация таблицы
   tableConfig: TableConfig = {
     columns: [
-      { key: 'id', title: 'ID', width: '80px' },
-      { key: 'username', title: 'Имя пользователя', sortable: true },
+      { key: 'id', 
+        title: 'ID', 
+        width: '80px' 
+      },
+      { key: 'username', 
+        title: 'Имя пользователя', 
+        sortable: true 
+      },
       { 
         key: 'roles', 
         title: 'Роли', 
@@ -53,7 +59,11 @@ export class Admin implements OnInit {
       }
     ],
     actions: [
-      { name: 'edit', label: 'Редактировать', icon: '✏️', color: '#007bff' },
+      { name: 'edit', 
+        label: 'Редактировать', 
+        icon: '✏️', 
+        color: '#007bff' 
+      },
       { 
         name: 'delete', 
         label: 'Удалить', 
