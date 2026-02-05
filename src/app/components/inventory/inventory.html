@@ -1,1 +1,146 @@
-<p>inventory works!</p>
+<div class="inventory-container">
+  <!-- Заголовок -->
+  <div class="page-header">
+    <h2>{{ title }}</h2>
+    <p>Управление устройствами и их перемещение между отделами</p>
+  </div>
+
+  <!-- Панель фильтров и поиска -->
+  <div class="filters-panel">
+    <div class="filter-group">
+      <label for="search">Поиск:</label>
+      <input
+        type="text"
+        id="search"
+        [(ngModel)]="searchText"
+        (input)="onSearchChange()"
+        placeholder="Поиск по названию или инвентарному номеру..."
+        class="search-input">
+    </div>
+
+    <div class="filter-group">
+      <label for="department">Отдел:</label>
+      <select
+        id="department"
+        [(ngModel)]="selectedDepartment"
+        (change)="onFilterChange()"
+        class="filter-select">
+        <option value="">Все отделы</option>
+        @for (dept of departments; track dept.id) {
+          <option [value]="dept.id">{{ dept.name }} ({{ dept.code }})</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="status">Статус:</label>
+      <select
+        id="status"
+        [(ngModel)]="selectedStatus"
+        (change)="onFilterChange()"
+        class="filter-select">
+        <option value="">Все статусы</option>
+        @for (status of statuses; track status.id) {
+          <option [value]="status.id">{{ status.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-actions">
+      <button (click)="resetFilters()" class="btn-reset">
+        <span class="material-icons">refresh</span>
+        Сбросить
+      </button>
+      <button (click)="openCreateModal()" class="btn-primary">
+        <span class="material-icons">add</span>
+        Добавить устройство
+      </button>
+    </div>
+  </div>
+
+  <!-- Универсальная таблица -->
+  <app-data-table
+    [data]="devices"
+    [config]="tableConfig"
+    [loading]="loading"
+    [emptyMessage]="emptyMessage"
+    (action)="onTableAction($event)"
+    (rowClick)="onRowClick($event)">
+  </app-data-table>
+
+  <!-- Пагинация -->
+  @if (totalPages > 1) {
+    <div class="pagination">
+      <button
+        (click)="changePage(1)"
+        [disabled]="currentPage === 1"
+        class="pagination-btn">
+        Первая
+      </button>
+      
+      <button
+        (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+        class="pagination-btn">
+        Предыдущая
+      </button>
+
+      <div class="pagination-info">
+        Страница {{ currentPage }} из {{ totalPages }}
+        (всего: {{ totalCount }})
+      </div>
+
+      <button
+        (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+        class="pagination-btn">
+        Следующая
+      </button>
+      
+      <button
+        (click)="changePage(totalPages)"
+        [disabled]="currentPage === totalPages"
+        class="pagination-btn">
+        Последняя
+      </button>
+
+      <div class="page-size-selector">
+        <label>Показывать:</label>
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+          <option [value]="100">100</option>
+        </select>
+      </div>
+    </div>
+  }
+
+  <!-- Модальное окно создания/редактирования -->
+  <app-modal-form
+    [config]="currentModalConfig"
+    [data]="selectedDevice"
+    [loading]="modalLoading"
+    [visible]="isModalOpen"
+    (save)="onModalSave($event)"
+    (cancel)="onModalCancel()">
+  </app-modal-form>
+
+  <!-- Модальное окно перемещения -->
+  <app-move-device-modal
+    [visible]="isMoveModalOpen"
+    [loading]="moveModalLoading"
+    [device]="selectedDevice"
+    [departments]="departments"
+    [reasons]="reasons"
+    (save)="onMoveDevice($event)"
+    (cancel)="onMoveModalCancel()">
+  </app-move-device-modal>
+
+  <!-- Модальное окно истории -->
+  <app-device-history-modal
+    [visible]="isHistoryModalOpen"
+    [device]="selectedDevice"
+    (cancel)="onHistoryModalCancel()">
+  </app-device-history-modal>
+</div>

@@ -1,0 +1,74 @@
+@if (visible) {
+  <div class="modal-overlay" (click)="onOverlayClick($event)">
+    <div class="modal-content modal-md" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Переместить устройство</h3>
+        <button (click)="onCancel()" class="btn-close">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="device-info">
+          <strong>Устройство:</strong> {{ device?.name }} ({{ device?.inventoryNumber }})
+        </div>
+        
+        <form class="modal-form">
+          <div class="form-group">
+            <label for="toDepartmentId">
+              Отдел назначения <span class="required">*</span>
+            </label>
+            <select
+              id="toDepartmentId"
+              [(ngModel)]="formData.toDepartmentId"
+              name="toDepartmentId"
+              class="form-input"
+              required>
+              <option value="">Выберите отдел...</option>
+              @for (dept of departments; track dept.id) {
+                @if (dept.isActive) {
+                  <option [value]="dept.id">{{ dept.name }} ({{ dept.code }})</option>
+                }
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="reasonId">
+              Причина перемещения <span class="required">*</span>
+            </label>
+            <select
+              id="reasonId"
+              [(ngModel)]="formData.reasonId"
+              name="reasonId"
+              class="form-input"
+              required>
+              <option value="">Выберите причину...</option>
+              @for (reason of reasons; track reason.id) {
+                @if (reason.isActive) {
+                  <option [value]="reason.id">{{ reason.name }}</option>
+                }
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="note">Примечание</label>
+            <textarea
+              id="note"
+              [(ngModel)]="formData.note"
+              name="note"
+              class="form-input"
+              placeholder="Дополнительная информация о перемещении"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button (click)="onCancel()" class="btn-cancel">Отмена</button>
+        <button
+          (click)="onSave()"
+          class="btn-save"
+          [disabled]="loading || !isFormValid()">
+          {{ loading ? 'Перемещение...' : 'Переместить' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
