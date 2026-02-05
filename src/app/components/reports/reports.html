@@ -1,0 +1,53 @@
+<div class="reports-container">
+  <!-- Заголовок -->
+  <div class="page-header">
+    <h2>{{ title }}</h2>
+    <p>Статистика и отчеты по инвентаризации</p>
+  </div>
+
+  <!-- Карточки статистики -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-label">Всего устройств</div>
+        <div class="stat-value">{{ totalDevices }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-label">Активных</div>
+        <div class="stat-value">{{ activeDevices }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🔧</div>
+      <div class="stat-content">
+        <div class="stat-label">В ремонте</div>
+        <div class="stat-value">{{ repairDevices }}</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🏢</div>
+      <div class="stat-content">
+        <div class="stat-label">Отделов</div>
+        <div class="stat-value">{{ departmentsCount }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Таблица статистики по отделам -->
+  <div class="section">
+    <h3>Статистика по отделам</h3>
+    <app-data-table
+      [data]="departmentStats"
+      [config]="statsTableConfig"
+      [loading]="loadingStats"
+      [emptyMessage]="'Статистика не найдена'">
+    </app-data-table>
+  </div>
+</div>

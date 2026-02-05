@@ -19,7 +19,9 @@ export class Dashboard implements OnInit {
   menuItems = [
     { path: '/dashboard/inventory', label: 'Инвентаризация', icon: 'inventory', roles: ['User', 'Admin'] },
     { path: '/dashboard/monitoring', label: 'Мониторинг', icon: 'monitoring', roles: ['User', 'Admin'] },
+    { path: '/dashboard/reports', label: 'Отчеты', icon: 'assessment', roles: ['User', 'Admin'] },
     { path: '/dashboard/settings', label: 'Настройки', icon: 'settings', roles: ['User', 'Admin'] },
+    { path: '/dashboard/reference-data', label: 'Справочники', icon: 'list_alt', roles: ['Admin'] },
     { path: '/dashboard/admin', label: 'Админ панель', icon: 'admin_panel_settings', roles: ['Admin'] }
   ];
 

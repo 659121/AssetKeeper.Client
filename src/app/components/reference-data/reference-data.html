@@ -1,0 +1,94 @@
+<div class="reference-data-container">
+  <!-- Заголовок -->
+  <div class="page-header">
+    <h2>{{ title }}</h2>
+    <p>Управление справочниками системы</p>
+  </div>
+
+  <!-- Вкладки -->
+  <app-tabs
+    [tabs]="tabs"
+    [activeTabId]="activeTab"
+    (tabChange)="onTabChange($event)">
+    
+    <!-- Вкладка: Отделы -->
+    @if (activeTab === 'departments') {
+      <div class="tab-pane">
+        <div class="tab-header">
+          <h3>Отделы</h3>
+          <button (click)="openCreateDepartmentModal()" class="btn-primary">
+            <span class="material-icons">add</span>
+            Добавить отдел
+          </button>
+        </div>
+        
+        <app-data-table
+          [data]="departments"
+          [config]="departmentsTableConfig"
+          [loading]="loadingDepartments"
+          [emptyMessage]="'Отделы не найдены'"
+          (action)="onDepartmentAction($event)"
+          (rowClick)="onDepartmentRowClick($event)">
+        </app-data-table>
+      </div>
+    }
+
+    <!-- Вкладка: Статусы -->
+    @if (activeTab === 'statuses') {
+      <div class="tab-pane">
+        <div class="tab-header">
+          <h3>Статусы устройств</h3>
+        </div>
+        
+        <app-data-table
+          [data]="statuses"
+          [config]="statusesTableConfig"
+          [loading]="loadingStatuses"
+          [emptyMessage]="'Статусы не найдены'">
+        </app-data-table>
+      </div>
+    }
+
+    <!-- Вкладка: Причины -->
+    @if (activeTab === 'reasons') {
+      <div class="tab-pane">
+        <div class="tab-header">
+          <h3>Причины перемещений</h3>
+          <button (click)="openCreateReasonModal()" class="btn-primary">
+            <span class="material-icons">add</span>
+            Добавить причину
+          </button>
+        </div>
+        
+        <app-data-table
+          [data]="reasons"
+          [config]="reasonsTableConfig"
+          [loading]="loadingReasons"
+          [emptyMessage]="'Причины не найдены'"
+          (action)="onReasonAction($event)"
+          (rowClick)="onReasonRowClick($event)">
+        </app-data-table>
+      </div>
+    }
+  </app-tabs>
+
+  <!-- Модальное окно для отделов -->
+  <app-modal-form
+    [config]="departmentModalConfig"
+    [data]="selectedDepartment"
+    [loading]="modalLoading"
+    [visible]="isDepartmentModalOpen"
+    (save)="onDepartmentSave($event)"
+    (cancel)="onDepartmentModalCancel()">
+  </app-modal-form>
+
+  <!-- Модальное окно для причин -->
+  <app-modal-form
+    [config]="reasonModalConfig"
+    [data]="selectedReason"
+    [loading]="modalLoading"
+    [visible]="isReasonModalOpen"
+    (save)="onReasonSave($event)"
+    (cancel)="onReasonModalCancel()">
+  </app-modal-form>
+</div>

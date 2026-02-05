@@ -5,68 +5,84 @@ import { Inventory } from './components/inventory/inventory';
 import { Monitoring } from './components/monitoring/monitoring';
 import { Settings } from './components/settings/settings';
 import { Admin } from './components/admin/admin';
+import { ReferenceDataComponent } from './components/reference-data/reference-data';
+import { ReportsComponent } from './components/reports/reports';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   // Страница логина - публичная
-  { 
-    path: 'login', 
-    component: LoginComponent 
+  {
+    path: 'login',
+    component: LoginComponent
   },
   
   // Главная страница - защищена authGuard
-  { 
-    path: 'dashboard', 
+  {
+    path: 'dashboard',
     component: Dashboard,
-    canActivate: [authGuard], // Защищаем роут
+    canActivate: [authGuard],
     children: [
       // Перенаправление с /dashboard на /dashboard/inventory
-      { 
-        path: '', 
-        redirectTo: 'inventory', 
-        pathMatch: 'full' 
+      {
+        path: '',
+        redirectTo: 'inventory',
+        pathMatch: 'full'
       },
       
       // Инвентаризация - для user и admin
-      { 
-        path: 'inventory', 
+      {
+        path: 'inventory',
         component: Inventory,
-        data: { roles: ['user', 'admin'] } 
+        data: { roles: ['user'] }
       },
       
       // Мониторинг - для user и admin
-      { 
-        path: 'monitoring', 
+      {
+        path: 'monitoring',
         component: Monitoring,
-        data: { roles: ['user', 'admin'] } 
+        data: { roles: ['admin'] }
       },
       
       // Настройки - для user и admin
-      { 
-        path: 'settings', 
+      {
+        path: 'settings',
         component: Settings,
-        data: { roles: ['user', 'admin'] } 
+        data: { roles: ['user', 'admin'] }
+      },
+      
+      // Отчеты - для user и admin
+      {
+        path: 'reports',
+        component: ReportsComponent,
+        data: { roles: ['user', 'admin'] }
+      },
+      
+      // Справочники - только для admin
+      {
+        path: 'reference-data',
+        component: ReferenceDataComponent,
+        data: { roles: ['admin'] }
       },
       
       // Админка - только для admin
-      { 
-        path: 'admin', 
+      {
+        path: 'admin',
         component: Admin,
-        data: { roles: ['admin'] } 
+        data: { roles: ['admin'] }
       }
     ]
   },
   
   // Перенаправление с корня на dashboard
-  { 
-    path: '', 
-    redirectTo: '/dashboard', 
-    pathMatch: 'full' 
+  {
+    path: '',
+    redirectTo: '/dashboard',
+    pathMatch: 'full'
   },
   
   // Обработка несуществующих маршрутов
-  { 
-    path: '**', 
-    redirectTo: '/dashboard' 
+  {
+    path: '**',
+    redirectTo: '/dashboard'
   }
 ];
