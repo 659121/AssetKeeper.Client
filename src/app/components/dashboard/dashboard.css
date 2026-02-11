@@ -13,37 +13,70 @@
   color: white;
   display: flex;
   flex-direction: column;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-header {
-  padding: 1.5rem 1rem;
+  padding: 1.5rem;
   border-bottom: 1px solid #34495e;
 }
 
 .sidebar-header h3 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 1rem 0;
   font-size: 1.2rem;
+  font-weight: 600;
 }
 
-.sidebar-header p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #bdc3c7;
+/* Кнопка входа */
+.login-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.login-btn:hover {
+  background-color: #2980b9;
+}
+
+/* Информация о пользователе */
+.user-info {
+  background-color: #34495e;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.user-info p {
+  margin: 0.25rem 0;
+  color: #ecf0f1;
 }
 
 .sidebar-nav {
   flex: 1;
   padding: 1rem 0;
+  overflow-y: auto;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.5rem;
   color: #ecf0f1;
   text-decoration: none;
   transition: background-color 0.2s;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .nav-item:hover {
@@ -52,6 +85,11 @@
 
 .nav-item.active {
   background-color: #3498db;
+  color: white;
+}
+
+.nav-item .material-icons {
+  font-size: 1.2rem;
 }
 
 .sidebar-footer {
@@ -60,27 +98,44 @@
 }
 
 .logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   width: 100%;
-  padding: 0.5rem;
-  background: none;
-  border: 1px solid #e74c3c;
-  color: #e74c3c;
+  padding: 0.75rem;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
 }
 
 .logout-btn:hover {
-  background-color: #e74c3c;
-  color: white;
+  background-color: #c0392b;
 }
 
 .main-content {
   flex: 1;
-  padding: 2rem;
-  background-color: #f8f9fa;
+  padding: 1.5rem;
   overflow-y: auto;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
 }

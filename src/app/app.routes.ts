@@ -16,11 +16,10 @@ export const routes: Routes = [
     component: LoginComponent
   },
   
-  // Главная страница - защищена authGuard
+  // Главная страница - публичная (без полной защиты)
   {
     path: 'dashboard',
     component: Dashboard,
-    canActivate: [authGuard],
     children: [
       // Перенаправление с /dashboard на /dashboard/inventory
       {
@@ -29,51 +28,49 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       
-      // Инвентаризация - для user и admin
+      // Инвентаризация - публичная (только просмотр), редактирование - для авторизованных
       {
         path: 'inventory',
-        component: Inventory,
-        data: { roles: ['user'] }
+        component: Inventory
       },
       
-      // Мониторинг - для user и admin
+      // Мониторинг - публичный
       {
         path: 'monitoring',
-        component: Monitoring,
-        data: { roles: ['admin'] }
+        component: Monitoring
       },
       
-      // Настройки - для user и admin
+      // Справочники - публичные (только просмотр), редактирование - для админов
+      {
+        path: 'reference-data',
+        component: ReferenceDataComponent
+      },
+      
+      // Отчеты - публичные
+      {
+        path: 'reports',
+        component: ReportsComponent
+      },
+      
+      // Настройки - только для авторизованных
       {
         path: 'settings',
         component: Settings,
-        data: { roles: ['user', 'admin'] }
+        canActivate: [authGuard],
+        data: { roles: ['User', 'Admin'] }
       },
       
-      // Отчеты - для user и admin
-      {
-        path: 'reports',
-        component: ReportsComponent,
-        data: { roles: ['user', 'admin'] }
-      },
-      
-      // Справочники - только для admin
-      {
-        path: 'reference-data',
-        component: ReferenceDataComponent,
-        data: { roles: ['admin'] }
-      },
-      
-      // Админка - только для admin
+      // Админка - только для админов
       {
         path: 'admin',
         component: Admin,
-        data: { roles: ['admin'] }
+        canActivate: [authGuard],
+        data: { roles: ['Admin'] }
       }
     ]
   },
   
-  // Перенаправление с корня на dashboard
+  // Перенаправление с корня на дашборд
   {
     path: '',
     redirectTo: '/dashboard',

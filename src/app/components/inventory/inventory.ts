@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; // Добавлен импорт Router
 import { DataTableComponent } from '../shared/data-table/data-table';
 import { ModalFormComponent } from '../shared/modal-form/modal-form';
 import { MoveDeviceModalComponent } from './move-device-modal/move-device-modal';
 import { DeviceHistoryModalComponent } from './device-history-modal/device-history-modal';
 import { DeviceService } from '../../services/device.service';
 import { ReferenceDataService } from '../../services/reference-data.service';
+import { AuthService } from '../../services/auth.service'; // Добавлен импорт AuthService
 import { 
   Device, 
   CreateDeviceRequest, 
@@ -62,7 +64,7 @@ export class Inventory implements OnInit {
   selectedDevice: Device | null = null;
   isEditMode = false;
 
-  // Конфигурация таблицы
+  // Конфигурация таблицы - динамическая в зависимости от авторизации
   tableConfig: TableConfig = {
     columns: [
       { 
@@ -78,51 +80,26 @@ export class Inventory implements OnInit {
       { 
         key: 'description', 
         title: 'Описание',
-        type: 'text'
+        type: 'text' as const // Исправлено: добавлено as const
       },
       { 
         key: 'currentDepartmentName', 
         title: 'Отдел',
-        type: 'text'
+        type: 'text' as const // Исправлено: добавлено as const
       },
       { 
         key: 'currentStatusName', 
         title: 'Статус',
-        type: 'text'
+        type: 'text' as const // Исправлено: добавлено as const
       },
       { 
         key: 'createdAt', 
         title: 'Добавлено',
-        type: 'date',
+        type: 'date' as const, // Исправлено: добавлено as const
         formatter: (date: string) => new Date(date).toLocaleDateString('ru-RU')
       }
     ],
-    actions: [
-      { 
-        name: 'viewHistory', 
-        label: 'История',
-        icon: '📋',
-        color: '#17a2b8'
-      },
-      { 
-        name: 'move', 
-        label: 'Переместить',
-        icon: '➡️',
-        color: '#ffc107'
-      },
-      { 
-        name: 'edit', 
-        label: 'Редактировать',
-        icon: '✏️',
-        color: '#007bff'
-      },
-      { 
-        name: 'delete', 
-        label: 'Удалить',
-        icon: '🗑️',
-        color: '#dc3545'
-      }
-    ]
+    actions: []
   };
 
   // Конфигурация модального окна для СОЗДАНИЯ
@@ -171,21 +148,20 @@ export class Inventory implements OnInit {
       {
         key: 'name',
         label: 'Название',
-        type: 'text',
+        type: 'text' as const,
         required: true
       },
       {
         key: 'inventoryNumber',
         label: 'Инвентарный номер',
-        type: 'text',
+        type: 'text' as const,
         required: true
       },
       {
         key: 'description',
         label: 'Описание',
-        type: 'textarea'
+        type: 'textarea' as const
       }
-      // Поля отдела и статуса убраны - их нельзя менять при редактировании
     ]
   };
 
@@ -194,12 +170,70 @@ export class Inventory implements OnInit {
 
   constructor(
     private deviceService: DeviceService,
-    private referenceService: ReferenceDataService
+    private referenceService: ReferenceDataService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadReferenceData();
     this.loadDevices();
+  }
+  
+  // Проверяем, авторизован ли пользователь
+  get isUserLoggedIn(): boolean {
+    return this.authService.currentUserValue !== null;
+  }
+
+  // Конфигурация таблицы - динамическая в зависимости от авторизации
+  get dynamicTableConfig(): TableConfig {
+    const baseColumns = this.tableConfig.columns;
+
+    // Если пользователь не авторизован - показываем только просмотр
+    if (!this.isUserLoggedIn) {
+      return {
+        columns: baseColumns,
+        actions: [
+          { 
+            name: 'viewHistory', 
+            label: 'История',
+            icon: '📋',
+            color: '#17a2b8'
+          }
+        ]
+      };
+    }
+
+    // Если авторизован - показываем кнопки
+    return {
+      columns: baseColumns,
+      actions: [
+        { 
+          name: 'viewHistory', 
+          label: 'История',
+          icon: '📋',
+          color: '#17a2b8'
+        },
+        { 
+          name: 'move', 
+          label: 'Переместить',
+          icon: '➡️',
+          color: '#ffc107'
+        },
+        { 
+          name: 'edit', 
+          label: 'Редактировать',
+          icon: '✏️',
+          color: '#007bff'
+        },
+        { 
+          name: 'delete', 
+          label: 'Удалить',
+          icon: '🗑️',
+          color: '#dc3545'
+        }
+      ]
+    };
   }
 
   // Загрузка справочных данных - ВСЕХ сразу
@@ -292,25 +326,53 @@ export class Inventory implements OnInit {
         this.openHistoryModal();
         break;
       case 'move':
+        // Проверяем авторизацию только для действий изменения
+        if (!this.isUserLoggedIn) {
+          this.router.navigate(['/login'], {
+            queryParams: { returnUrl: this.router.url }
+          });
+          return;
+        }
         this.openMoveModal();
         break;
       case 'edit':
+        if (!this.isUserLoggedIn) {
+          this.router.navigate(['/login'], {
+            queryParams: { returnUrl: this.router.url }
+          });
+          return;
+        }
         this.openEditModal();
         break;
       case 'delete':
+        if (!this.isUserLoggedIn) {
+          this.router.navigate(['/login'], {
+            queryParams: { returnUrl: this.router.url }
+          });
+          return;
+        }
         this.onDelete(event.item);
         break;
     }
   }
 
-  // Клик по строке таблицы
+  // Клик по строке таблицы - только для авторизованных
   onRowClick(device: Device): void {
-    this.selectedDevice = device;
-    this.openEditModal();
+    if (this.isUserLoggedIn) {
+      this.selectedDevice = device;
+      this.openEditModal();
+    }
   }
 
-  // Открыть модальное окно создания
+  // Открыть модальное окно создания - только для авторизованных
   openCreateModal(): void {
+    if (!this.isUserLoggedIn) {
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: this.router.url }
+      });
+      return;
+    }
+    
     this.isEditMode = false;
     this.selectedDevice = null;
     this.currentModalConfig = this.createModalConfig;

@@ -46,22 +46,25 @@
       </select>
     </div>
 
-    <div class="filter-actions">
-      <button (click)="resetFilters()" class="btn-reset">
-        <span class="material-icons">refresh</span>
-        Сбросить
-      </button>
-      <button (click)="openCreateModal()" class="btn-primary">
-        <span class="material-icons">add</span>
-        Добавить устройство
-      </button>
-    </div>
+    <!-- Кнопка "Добавить устройство" только для авторизованных -->
+    @if (isUserLoggedIn) {
+      <div class="filter-actions">
+        <button (click)="resetFilters()" class="btn-reset">
+          <span class="material-icons">refresh</span>
+          Сбросить
+        </button>
+        <button (click)="openCreateModal()" class="btn-primary">
+          <span class="material-icons">add</span>
+          Добавить устройство
+        </button>
+      </div>
+    }
   </div>
 
   <!-- Универсальная таблица -->
   <app-data-table
     [data]="devices"
-    [config]="tableConfig"
+    [config]="dynamicTableConfig"
     [loading]="loading"
     [emptyMessage]="emptyMessage"
     (action)="onTableAction($event)"
@@ -116,28 +119,28 @@
     </div>
   }
 
-  <!-- Модальное окно создания/редактирования -->
-  <app-modal-form
-    [config]="currentModalConfig"
-    [data]="selectedDevice"
-    [loading]="modalLoading"
-    [visible]="isModalOpen"
-    (save)="onModalSave($event)"
-    (cancel)="onModalCancel()">
-  </app-modal-form>
+  <!-- Модальные окна (показываются только для авторизованных) -->
+  @if (isUserLoggedIn) {
+    <app-modal-form
+      [config]="currentModalConfig"
+      [data]="selectedDevice"
+      [loading]="modalLoading"
+      [visible]="isModalOpen"
+      (save)="onModalSave($event)"
+      (cancel)="onModalCancel()">
+    </app-modal-form>
 
-  <!-- Модальное окно перемещения -->
-  <app-move-device-modal
-    [visible]="isMoveModalOpen"
-    [loading]="moveModalLoading"
-    [device]="selectedDevice"
-    [departments]="departments"
-    [reasons]="reasons"
-    (save)="onMoveDevice($event)"
-    (cancel)="onMoveModalCancel()">
-  </app-move-device-modal>
+    <app-move-device-modal
+      [visible]="isMoveModalOpen"
+      [loading]="moveModalLoading"
+      [device]="selectedDevice"
+      [departments]="departments"
+      [reasons]="reasons"
+      (save)="onMoveDevice($event)"
+      (cancel)="onMoveModalCancel()">
+    </app-move-device-modal>
+  }
 
-  <!-- Модальное окно истории -->
   <app-device-history-modal
     [visible]="isHistoryModalOpen"
     [device]="selectedDevice"

@@ -8,7 +8,7 @@ import { User } from '../../models/auth.models';
   selector: 'app-dashboard',
   imports: [
     CommonModule,
-    RouterModule, 
+    RouterModule,
     RouterOutlet
   ],
   templateUrl: './dashboard.html',
@@ -16,12 +16,14 @@ import { User } from '../../models/auth.models';
 })
 export class Dashboard implements OnInit {
   currentUser: User | null = null;
+  
+  // Меню - все пункты доступны, но некоторые скрываются при отсутствии прав
   menuItems = [
-    { path: '/dashboard/inventory', label: 'Инвентаризация', icon: 'inventory', roles: ['User', 'Admin'] },
-    { path: '/dashboard/monitoring', label: 'Мониторинг', icon: 'monitoring', roles: ['User', 'Admin'] },
-    { path: '/dashboard/reports', label: 'Отчеты', icon: 'assessment', roles: ['User', 'Admin'] },
+    { path: '/dashboard/inventory', label: 'Инвентаризация', icon: 'inventory', roles: [] },
+    { path: '/dashboard/monitoring', label: 'Мониторинг', icon: 'monitoring', roles: [] },
+    { path: '/dashboard/reports', label: 'Отчеты', icon: 'assessment', roles: [] },
+    { path: '/dashboard/reference-data', label: 'Справочники', icon: 'list_alt', roles: [] },
     { path: '/dashboard/settings', label: 'Настройки', icon: 'settings', roles: ['User', 'Admin'] },
-    { path: '/dashboard/reference-data', label: 'Справочники', icon: 'list_alt', roles: ['Admin'] },
     { path: '/dashboard/admin', label: 'Админ панель', icon: 'admin_panel_settings', roles: ['Admin'] }
   ];
 
@@ -33,18 +35,22 @@ export class Dashboard implements OnInit {
 
   // Проверяет, есть ли у пользователя доступ к пункту меню
   hasAccess(requiredRoles: string[]): boolean {
+    // Если роли не требуются - показываем всем
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
+    
+    // Если роли требуются - проверяем авторизацию и роли
     return this.authService.hasAnyRole(requiredRoles);
   }
 
   // Получаем отображаемое имя роли
   getRolesDisplayName(): string {
     if (!this.currentUser) return '';
-    
     const roleNames: { [key: string]: string } = {
       'User': 'Пользователь',
       'Admin': 'Администратор'
     };
-    
     return this.currentUser.roles
       .map(role => roleNames[role] || role)
       .join(', ');
@@ -53,6 +59,14 @@ export class Dashboard implements OnInit {
   // Выход из системы
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.currentUser = null;
+    this.router.navigate(['/dashboard']);
+  }
+
+  // Переход на страницу логина
+  login(): void {
+    this.router.navigate(['/login'], {
+      queryParams: { returnUrl: this.router.url }
+    });
   }
 }

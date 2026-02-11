@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; // Добавлен импорт Router
 import { DataTableComponent } from '../shared/data-table/data-table';
 import { ModalFormComponent } from '../shared/modal-form/modal-form';
 import { TabsComponent } from '../shared/tabs/tabs';
 import { ReferenceDataService } from '../../services/reference-data.service';
+import { AuthService } from '../../services/auth.service'; // Добавлен импорт AuthService
 import { 
   Department, 
   DeviceStatus, 
@@ -59,78 +61,86 @@ export class ReferenceDataComponent implements OnInit {
   isDepartmentEditMode = false;
   isReasonEditMode = false;
 
-  // Конфигурации таблиц
-  departmentsTableConfig: TableConfig = {
-    columns: [
-      { key: 'code', title: 'Код', type: 'number' },
-      { key: 'name', title: 'Название', type: 'text' },
-      { 
-        key: 'isActive', 
-        title: 'Активен', 
-        type: 'boolean',
-        formatter: (value: boolean) => value ? '✅' : '❌'
-      }
-    ],
-    actions: [
-      { 
-        name: 'edit', 
-        label: 'Редактировать',
-        icon: '✏️',
-        color: '#007bff'
-      },
-      { 
-        name: 'delete', 
-        label: 'Удалить',
-        icon: '🗑️',
-        color: '#dc3545',
-        condition: (dept: Department) => dept.isActive
-      }
-    ]
-  };
+  // Конфигурации таблиц - динамические в зависимости от прав
+  get departmentsTableConfig(): TableConfig {
+    const baseConfig: TableConfig = {
+      columns: [
+        { key: 'code', title: 'Код', type: 'number' },
+        { key: 'name', title: 'Название', type: 'text' },
+        { 
+          key: 'isActive', 
+          title: 'Активен', 
+          type: 'boolean',
+          formatter: (value: boolean) => value ? '✅' : '❌'
+        }
+      ],
+      actions: []
+    };
 
-  statusesTableConfig: TableConfig = {
-    columns: [
-      { key: 'code', title: 'Код', type: 'text' },
-      { key: 'name', title: 'Название', type: 'text' },
-      { key: 'sortOrder', title: 'Порядок', type: 'number' },
-      { 
-        key: 'isActive', 
-        title: 'Активен', 
-        type: 'boolean',
-        formatter: (value: boolean) => value ? '✅' : '❌'
-      }
-    ]
-  };
+    // Админы видят кнопки редактирования
+    if (this.isAdmin) {
+      baseConfig.actions = [
+        { 
+          name: 'edit', 
+          label: 'Редактировать',
+          icon: '✏️',
+          color: '#007bff'
+        }
+        // Удаление пока не реализовано в API
+      ];
+    }
 
-  reasonsTableConfig: TableConfig = {
-    columns: [
-      { key: 'code', title: 'Код', type: 'text' },
-      { key: 'name', title: 'Название', type: 'text' },
-      { key: 'description', title: 'Описание', type: 'text' },
-      { key: 'sortOrder', title: 'Порядок', type: 'number' },
-      { 
-        key: 'isActive', 
-        title: 'Активен', 
-        type: 'boolean',
-        formatter: (value: boolean) => value ? '✅' : '❌'
-      }
-    ],
-    actions: [
-      { 
-        name: 'edit', 
-        label: 'Редактировать',
-        icon: '✏️',
-        color: '#007bff'
-      },
-      { 
-        name: 'delete', 
-        label: 'Удалить',
-        icon: '🗑️',
-        color: '#dc3545',
-        condition: (reason: MovementReason) => reason.isActive
-      }
-    ]
-  };
+    return baseConfig;
+  }
+
+  get statusesTableConfig(): TableConfig {
+    return {
+      columns: [
+        { key: 'code', title: 'Код', type: 'text' },
+        { key: 'name', title: 'Название', type: 'text' },
+        { key: 'sortOrder', title: 'Порядок', type: 'number' },
+        { 
+          key: 'isActive', 
+          title: 'Активен', 
+          type: 'boolean',
+          formatter: (value: boolean) => value ? '✅' : '❌'
+        }
+      ],
+      actions: []  // Статусы только для просмотра
+    };
+  }
+
+  get reasonsTableConfig(): TableConfig {
+    const baseConfig: TableConfig = {
+      columns: [
+        { key: 'code', title: 'Код', type: 'text' },
+        { key: 'name', title: 'Название', type: 'text' },
+        { key: 'description', title: 'Описание', type: 'text' },
+        { key: 'sortOrder', title: 'Порядок', type: 'number' },
+        { 
+          key: 'isActive', 
+          title: 'Активен', 
+          type: 'boolean',
+          formatter: (value: boolean) => value ? '✅' : '❌'
+        }
+      ],
+      actions: []
+    };
+
+    // Админы видят кнопки редактирования
+    if (this.isAdmin) {
+      baseConfig.actions = [
+        { 
+          name: 'edit', 
+          label: 'Редактировать',
+          icon: '✏️',
+          color: '#007bff'
+        }
+      ];
+    }
+
+    return baseConfig;
+  }
 
   // Конфигурации модальных окон
   departmentModalConfig: ModalConfig = {
@@ -192,12 +202,24 @@ export class ReferenceDataComponent implements OnInit {
     ]
   };
 
-  constructor(private referenceService: ReferenceDataService) {}
+  constructor(
+    private referenceService: ReferenceDataService,
+    private authService: AuthService  // Добавляем AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadDepartments();
     this.loadStatuses();
     this.loadReasons();
+  }
+
+  // Проверяем, авторизован ли пользователь и является ли админом
+  get isUserLoggedIn(): boolean {
+    return this.authService.currentUserValue !== null;
+  }
+
+  get isAdmin(): boolean {
+    return this.authService.hasRole('Admin');
   }
 
   // Загрузка данных
@@ -253,6 +275,10 @@ export class ReferenceDataComponent implements OnInit {
 
   // Отделы
   openCreateDepartmentModal(): void {
+    if (!this.isAdmin) {
+      alert('Только администраторы могут создавать отделы');
+      return;
+    }
     this.isDepartmentEditMode = false;
     this.selectedDepartment = null;
     this.departmentModalConfig.title = 'Добавить отдел';

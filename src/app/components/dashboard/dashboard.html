@@ -3,16 +3,27 @@
   <div class="sidebar">
     <div class="sidebar-header">
       <h3>Система инвентаризации</h3>
-      <p>Пользователь: {{ currentUser?.username }}</p>
-      <p>Роли: {{ getRolesDisplayName() }}</p>
+      
+      <!-- Кнопка входа/информация о пользователе -->
+      @if (!currentUser) {
+        <button (click)="login()" class="login-btn">
+          <span class="material-icons">login</span>
+          Войти
+        </button>
+      } @else {
+        <div class="user-info">
+          <p>👤 {{ currentUser.username }}</p>
+          <p>🎭 {{ getRolesDisplayName() }}</p>
+        </div>
+      }
     </div>
-
+    
     <nav class="sidebar-nav">
       <!-- Новый синтаксис @for и @if -->
       @for (item of menuItems; track item.path) {
         @if (hasAccess(item.roles)) {
-          <a 
-            [routerLink]="item.path" 
+          <a
+            [routerLink]="item.path"
             routerLinkActive="active"
             class="nav-item">
             <span class="material-icons">{{ item.icon }}</span>
@@ -21,16 +32,18 @@
         }
       }
     </nav>
-
-    <!-- Кнопка выхода -->
-    <div class="sidebar-footer">
-      <button (click)="logout()" class="logout-btn">
-        <span class="material-icons">logout</span>
-        Выйти
-      </button>
-    </div>
+    
+    <!-- Кнопка выхода (только для авторизованных) -->
+    @if (currentUser) {
+      <div class="sidebar-footer">
+        <button (click)="logout()" class="logout-btn">
+          <span class="material-icons">logout</span>
+          Выйти
+        </button>
+      </div>
+    }
   </div>
-
+  
   <!-- Основное содержимое -->
   <div class="main-content">
     <!-- Router outlet для дочерних компонентов -->

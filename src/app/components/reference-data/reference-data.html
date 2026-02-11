@@ -16,10 +16,13 @@
       <div class="tab-pane">
         <div class="tab-header">
           <h3>Отделы</h3>
-          <button (click)="openCreateDepartmentModal()" class="btn-primary">
-            <span class="material-icons">add</span>
-            Добавить отдел
-          </button>
+          <!-- Кнопка только для админов -->
+          @if (isAdmin) {
+            <button (click)="openCreateDepartmentModal()" class="btn-primary">
+              <span class="material-icons">add</span>
+              Добавить отдел
+            </button>
+          }
         </div>
         
         <app-data-table
@@ -54,10 +57,13 @@
       <div class="tab-pane">
         <div class="tab-header">
           <h3>Причины перемещений</h3>
-          <button (click)="openCreateReasonModal()" class="btn-primary">
-            <span class="material-icons">add</span>
-            Добавить причину
-          </button>
+          <!-- Кнопка только для админов -->
+          @if (isAdmin) {
+            <button (click)="openCreateReasonModal()" class="btn-primary">
+              <span class="material-icons">add</span>
+              Добавить причину
+            </button>
+          }
         </div>
         
         <app-data-table
@@ -72,23 +78,24 @@
     }
   </app-tabs>
 
-  <!-- Модальное окно для отделов -->
-  <app-modal-form
-    [config]="departmentModalConfig"
-    [data]="selectedDepartment"
-    [loading]="modalLoading"
-    [visible]="isDepartmentModalOpen"
-    (save)="onDepartmentSave($event)"
-    (cancel)="onDepartmentModalCancel()">
-  </app-modal-form>
+  <!-- Модальные окна (только для админов) -->
+  @if (isAdmin) {
+    <app-modal-form
+      [config]="departmentModalConfig"
+      [data]="selectedDepartment"
+      [loading]="modalLoading"
+      [visible]="isDepartmentModalOpen"
+      (save)="onDepartmentSave($event)"
+      (cancel)="onDepartmentModalCancel()">
+    </app-modal-form>
 
-  <!-- Модальное окно для причин -->
-  <app-modal-form
-    [config]="reasonModalConfig"
-    [data]="selectedReason"
-    [loading]="modalLoading"
-    [visible]="isReasonModalOpen"
-    (save)="onReasonSave($event)"
-    (cancel)="onReasonModalCancel()">
-  </app-modal-form>
+    <app-modal-form
+      [config]="reasonModalConfig"
+      [data]="selectedReason"
+      [loading]="modalLoading"
+      [visible]="isReasonModalOpen"
+      (save)="onReasonSave($event)"
+      (cancel)="onReasonModalCancel()">
+    </app-modal-form>
+  }
 </div>
