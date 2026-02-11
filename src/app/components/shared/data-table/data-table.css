@@ -71,3 +71,17 @@
 .action-btn:hover {
   background-color: #e9ecef;
 }
+
+/* Зебра - чередование цветов строк */
+table tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+/* Ховер на строку*/
+table tr:hover {
+  background-color: #e7f3ff !important;
+}
