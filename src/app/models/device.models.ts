@@ -10,6 +10,7 @@ export interface Device {
   currentDepartmentName: string | null;
   currentStatusId: number;
   currentStatusName: string | null;
+  sticker?: string | null;
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
@@ -22,6 +23,7 @@ export interface CreateDeviceRequest {
   description?: string | null;
   currentDepartmentId?: string | null;
   currentStatusId: number;
+  sticker: string;
 }
 
 // Обновление устройства
@@ -38,6 +40,7 @@ export interface MoveDeviceRequest {
   toDepartmentId: string;
   reasonId: string;
   note?: string | null;
+  newSticker?: string | null;
 }
 
 // История перемещения устройства
@@ -49,6 +52,8 @@ export interface DeviceMovement {
   reasonName: string | null;
   movedBy: string | null;
   note: string | null;
+  oldSticker?: string | null;
+  newSticker?: string | null;
 }
 
 // Параметры запроса списка устройств

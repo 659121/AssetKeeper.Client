@@ -72,6 +72,12 @@ export class Inventory implements OnInit {
         title: 'Инв. номер',
         width: '120px'
       },
+      {
+        key: 'sticker',
+        title: 'Стикер',
+        width: '100px',
+        formatter: (value: string | null) => value || '—'
+      },
       { 
         key: 'name', 
         title: 'Название',
@@ -116,6 +122,12 @@ export class Inventory implements OnInit {
       {
         key: 'inventoryNumber',
         label: 'Инвентарный номер',
+        type: 'text',
+        required: true
+      },
+      {
+        key: 'sticker',  // Новое поле
+        label: 'Номер стикера',
         type: 'text',
         required: true
       },
@@ -426,10 +438,11 @@ export class Inventory implements OnInit {
         }
       });
     } else {
-      // Создание - с отделом и статусом
+      // Создание - с отделом и статусом и ОБЯЗАТЕЛЬНЫМ стикером
       const createData: CreateDeviceRequest = {
         name: formData.name,
         inventoryNumber: formData.inventoryNumber,
+        sticker: formData.sticker.trim(),
         description: formData.description || null,
         currentDepartmentId: formData.currentDepartmentId || null,
         currentStatusId: Number(formData.currentStatusId)
@@ -453,10 +466,17 @@ export class Inventory implements OnInit {
   // Перемещение устройства
   onMoveDevice(formData: any): void {
     if (!this.selectedDevice) return;
-
     this.moveModalLoading = true;
 
-    this.deviceService.moveDevice(formData).subscribe({
+    const moveData = {
+      deviceId: this.selectedDevice.id,
+      toDepartmentId: formData.toDepartmentId,
+      reasonId: formData.reasonId,
+      note: formData.note || null,
+      newSticker: formData.newSticker ? formData.newSticker.trim() : null
+    };
+
+    this.deviceService.moveDevice(moveData).subscribe({
       next: () => {
         this.loadDevices();
         this.onMoveModalCancel();

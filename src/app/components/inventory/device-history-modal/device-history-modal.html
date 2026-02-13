@@ -50,6 +50,18 @@
                         <span class="history-value">{{ item.movedBy }}</span>
                       </div>
                     }
+
+                    @if (item.oldSticker !== null || item.newSticker !== null) {
+                      <div class="history-row">
+                        <span class="history-label">Стикер:</span>
+                        <span class="history-value">
+                          @if (item.oldSticker !== null) {
+                            {{ item.oldSticker }} →
+                          }
+                          {{ item.newSticker || 'Не указан' }}
+                        </span>
+                      </div>
+                    }
                     
                     @if (item.note) {
                       <div class="history-row">

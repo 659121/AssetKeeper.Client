@@ -24,10 +24,17 @@ export class MoveDeviceModalComponent implements OnInit {
   formData = {
     toDepartmentId: '',
     reasonId: '',
-    note: ''
+    note: '',
+    newSticker: ''
   };
 
   constructor() {}
+
+  // Проверяем, выбрана ли причина с кодом "return"
+  get isReturnReason(): boolean {
+    const selectedReason = this.reasons.find(r => r.id === this.formData.reasonId);
+    return selectedReason?.code === 'return';
+  }
 
   ngOnInit(): void {
     if (this.visible) {
@@ -53,7 +60,8 @@ export class MoveDeviceModalComponent implements OnInit {
     this.formData = {
       toDepartmentId: this.device?.currentDepartmentId || '',
       reasonId: '',
-      note: ''
+      note: '',
+      newSticker: ''
     };
   }
 
