@@ -72,6 +72,12 @@ export class Inventory implements OnInit {
         title: 'Инв. номер',
         width: '120px'
       },
+      { 
+        key: 'serialNumber', // Новая колонка
+        title: 'Серийный номер',
+        width: '120px',
+        formatter: (value: string | null) => value || '—'
+      },
       {
         key: 'sticker',
         title: 'Стикер',
@@ -122,6 +128,12 @@ export class Inventory implements OnInit {
       {
         key: 'inventoryNumber',
         label: 'Инвентарный номер',
+        type: 'text',
+        required: true
+      },
+      {
+        key: 'serialNumber', // Новое обязательное поле
+        label: 'Серийный номер',
         type: 'text',
         required: true
       },
@@ -368,12 +380,10 @@ export class Inventory implements OnInit {
     }
   }
 
-  // Клик по строке таблицы - только для авторизованных
+  // Клик по строке таблицы
   onRowClick(device: Device): void {
-    if (this.isUserLoggedIn) {
-      this.selectedDevice = device;
-      this.openEditModal();
-    }
+    this.selectedDevice = device;
+    this.openHistoryModal();
   }
 
   // Открыть модальное окно создания - только для авторизованных
@@ -442,6 +452,7 @@ export class Inventory implements OnInit {
       const createData: CreateDeviceRequest = {
         name: formData.name,
         inventoryNumber: formData.inventoryNumber,
+        serialNumber: formData.serialNumber.trim(),
         sticker: formData.sticker.trim(),
         description: formData.description || null,
         currentDepartmentId: formData.currentDepartmentId || null,

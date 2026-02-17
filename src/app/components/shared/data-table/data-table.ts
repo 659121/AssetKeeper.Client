@@ -24,6 +24,12 @@ export class DataTableComponent {
   }
 
   onRowClick(item: any): void {
+    // Проверяем, выделил ли пользователь текст.
+    // Если выделение есть, не открываем карточку/историю, чтобы не мешать копированию.
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      return;
+    }
     this.rowClick.emit(item);
   }
 

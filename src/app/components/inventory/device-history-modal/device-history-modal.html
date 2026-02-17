@@ -51,17 +51,23 @@
                       </div>
                     }
 
-                    @if (item.oldSticker !== null || item.newSticker !== null) {
-                      <div class="history-row">
-                        <span class="history-label">Стикер:</span>
-                        <span class="history-value">
+                    <!-- Поле стикера отображается всегда -->
+                    <div class="history-row">
+                      <span class="history-label">Стикер:</span>
+                      <span class="history-value">
+                        <!-- Если стикер изменился -->
+                        @if (item.oldSticker !== item.newSticker) {
                           @if (item.oldSticker !== null) {
-                            {{ item.oldSticker }} →
+                            {{ item.oldSticker }} → 
                           }
                           {{ item.newSticker || 'Не указан' }}
-                        </span>
-                      </div>
-                    }
+                        } 
+                        <!-- Если стикер НЕ изменялся -->
+                        @else {
+                          {{ item.newSticker || 'Не указан' }}
+                        }
+                      </span>
+                    </div>
                     
                     @if (item.note) {
                       <div class="history-row">

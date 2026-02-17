@@ -5,6 +5,7 @@ export interface Device {
   id: string;  // UUID
   name: string;
   inventoryNumber: string;
+  serialNumber?: string | null;
   description: string | null;
   currentDepartmentId: string | null;
   currentDepartmentName: string | null;
@@ -20,6 +21,7 @@ export interface Device {
 export interface CreateDeviceRequest {
   name: string;
   inventoryNumber: string;
+  serialNumber: string;
   description?: string | null;
   currentDepartmentId?: string | null;
   currentStatusId: number;
