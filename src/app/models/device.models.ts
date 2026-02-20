@@ -51,6 +51,7 @@ export interface DeviceMovement {
   movedAt: string;
   fromDepartmentName: string | null;
   toDepartmentName: string | null;
+  reasonCode: string | null;
   reasonName: string | null;
   movedBy: string | null;
   note: string | null;

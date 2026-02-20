@@ -220,3 +220,52 @@
     padding: 1rem;
   }
 }
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #dee2e6;
+  flex-wrap: wrap; /* Чтобы кнопка не ломала верстку на мобильных */
+  gap: 0.5rem;
+}
+
+/* Контейнер для причины и кнопки */
+.history-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto; /* Прижимаем к правому краю */
+}
+
+/* Стили кнопки печати в истории */
+.btn-print-history {
+  background: white;
+  border: 1px solid #007bff;
+  color: #007bff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-print-history:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-print-history.pass-btn {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.btn-print-history.pass-btn:hover {
+  background-color: #28a745;
+  color: white;
+}

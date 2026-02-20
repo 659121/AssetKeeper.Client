@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+@media print {
+  /* 1. Скрываем ВСЕ прямые дети app-root, КРОМЕ компонентов печати */
+  app-root > :not(app-material-pass-template):not(app-print-template) {
+    display: none !important;
+  }
+
+  /* 2. Убеждаемся, что сами компоненты печати отображаются как block */
+  app-material-pass-template,
+  app-print-template {
+    display: block !important;
+  }
+  
+  /* 3. Убираем отступы браузера */
+  @page {
+    margin: 0;
+    size: A4;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}

@@ -55,3 +55,19 @@ export interface ModalField {
   options?: { value: any; label: string }[];
   disabled?: boolean;
 }
+
+export interface PrintTransferData {
+  // Данные устройства
+  deviceName: string;
+  inventoryNumber: string;
+  serialNumber?: string | null;
+  sticker?: string | null;
+
+  // Данные перемещения
+  fromDepartment: string | null;
+  toDepartment: string;
+  reason: string;
+  movedAt: Date | string;
+  movedBy: string | null;
+  note?: string | null;
+}

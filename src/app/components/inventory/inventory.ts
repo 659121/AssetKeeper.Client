@@ -8,7 +8,9 @@ import { MoveDeviceModalComponent } from './move-device-modal/move-device-modal'
 import { DeviceHistoryModalComponent } from './device-history-modal/device-history-modal';
 import { DeviceService } from '../../services/device.service';
 import { ReferenceDataService } from '../../services/reference-data.service';
-import { AuthService } from '../../services/auth.service'; // Добавлен импорт AuthService
+import { AuthService } from '../../services/auth.service';
+import { PrintService } from '../../services/print.service';
+import { PrintTransferData } from '../../models/base.models';
 import { 
   Device, 
   CreateDeviceRequest, 
@@ -196,7 +198,8 @@ export class Inventory implements OnInit {
     private deviceService: DeviceService,
     private referenceService: ReferenceDataService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private printService: PrintService
   ) {}
 
   ngOnInit(): void {
@@ -492,6 +495,7 @@ export class Inventory implements OnInit {
         this.loadDevices();
         this.onMoveModalCancel();
         this.moveModalLoading = false;
+
         alert('Устройство успешно перемещено');
       },
       error: (error) => {

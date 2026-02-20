@@ -26,11 +26,40 @@
                     <span class="history-date">
                       {{ formatDate(item.movedAt) }}
                     </span>
-                    @if (item.reasonName) {
-                      <span class="history-reason">
-                        {{ item.reasonName }}
-                      </span>
-                    }
+                    
+                    <!-- Блок с причиной и кнопкой печати -->
+                    <div class="history-actions">
+                      @if (item.reasonName) {
+                        <span class="history-reason">
+                          {{ item.reasonName }}
+                        </span>
+                      }
+
+                      <!-- Проверяем наличие роли 'User' или 'Admin' перед показом кнопок -->
+                      @if (authService.hasAnyRole(['User', 'Admin'])) {
+                        
+                        <!-- Кнопка "Акт передачи" -->
+                        @if (item.reasonCode === 'repair' || item.reasonCode === 'return') {
+                          <button 
+                            class="btn-print-history" 
+                            (click)="onPrintTransfer(item)" 
+                            title="Распечатать акт передачи">
+                            📄 Акт передачи
+                          </button>
+                        }
+
+                        <!-- Кнопка "Материальный пропуск" -->
+                        @if (item.reasonCode === 'return') {
+                          <button 
+                            class="btn-print-history pass-btn" 
+                            (click)="onPrintPass(item)" 
+                            title="Распечатать материальный пропуск">
+                            🎫 Мат. пропуск
+                          </button>
+                        }
+
+                      }
+                    </div>
                   </div>
                   
                   <div class="history-details">
@@ -51,19 +80,16 @@
                       </div>
                     }
 
-                    <!-- Поле стикера отображается всегда -->
+                    <!-- Поле стикера -->
                     <div class="history-row">
                       <span class="history-label">Стикер:</span>
                       <span class="history-value">
-                        <!-- Если стикер изменился -->
                         @if (item.oldSticker !== item.newSticker) {
                           @if (item.oldSticker !== null) {
                             {{ item.oldSticker }} → 
                           }
                           {{ item.newSticker || 'Не указан' }}
-                        } 
-                        <!-- Если стикер НЕ изменялся -->
-                        @else {
+                        } @else {
                           {{ item.newSticker || 'Не указан' }}
                         }
                       </span>

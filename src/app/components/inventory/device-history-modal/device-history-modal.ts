@@ -2,6 +2,9 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Device, DeviceMovement } from '../../../models/device.models';
 import { DeviceService } from '../../../services/device.service';
+import { PrintService } from '../../../services/print.service';
+import { PrintTransferData } from '../../../models/base.models';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-device-history-modal',
@@ -19,7 +22,11 @@ export class DeviceHistoryModalComponent implements OnInit {
   history: DeviceMovement[] = [];
   loading = false;
 
-  constructor(private deviceService: DeviceService) {}
+  constructor(
+    private deviceService: DeviceService,
+    private printService: PrintService,
+    public authService: AuthService 
+  ) {}
 
   ngOnInit(): void {
     if (this.visible && this.device) {
@@ -72,5 +79,45 @@ export class DeviceHistoryModalComponent implements OnInit {
     if (event.target === event.currentTarget) {
       this.onCancel();
     }
+  }
+
+    // Печать Акта передачи
+  onPrintTransfer(item: DeviceMovement): void {
+    if (!this.device) return;
+    
+    const printData: PrintTransferData = {
+      deviceName: this.device.name,
+      inventoryNumber: this.device.inventoryNumber,
+      serialNumber: this.device.serialNumber,
+      sticker: item.newSticker,
+      fromDepartment: item.fromDepartmentName,
+      toDepartment: item.toDepartmentName || 'Не указана',
+      reason: item.reasonName || 'Не указана',
+      movedAt: item.movedAt,
+      movedBy: item.movedBy,
+      note: item.note
+    };
+
+    this.printService.printTransferDocument(printData);
+  }
+
+  // Печать Материального пропуска
+  onPrintPass(item: DeviceMovement): void {
+    if (!this.device) return;
+
+    const printData: PrintTransferData = {
+      deviceName: this.device.name,
+      inventoryNumber: this.device.inventoryNumber,
+      serialNumber: this.device.serialNumber,
+      sticker: item.newSticker,
+      fromDepartment: item.fromDepartmentName,
+      toDepartment: item.toDepartmentName || 'Не указана',
+      reason: item.reasonName || 'Не указана',
+      movedAt: item.movedAt,
+      movedBy: item.movedBy,
+      note: item.note
+    };
+
+    this.printService.printMaterialPass(printData);
   }
 }
