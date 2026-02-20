@@ -60,6 +60,26 @@
               placeholder="Номер нового стикера">
           </div>
 
+          @if (isRepairReason || isReturnReason) {
+            <div class="form-group">
+              <label for="representative">
+                @if (isRepairReason) {
+                  Сдал (ФИО представителя отдела) <span class="required">*</span>
+                } @else if (isReturnReason) {
+                  Принял (ФИО представителя отдела) <span class="required">*</span>
+                }
+              </label>
+              <input
+                type="text"
+                id="representative"
+                [(ngModel)]="formData.representative"
+                name="representative"
+                class="form-input"
+                placeholder="Иванов И.И."
+                required>
+            </div>
+          }
+          
           <div class="form-group">
             <label for="note">Примечание</label>
             <textarea

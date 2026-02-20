@@ -25,7 +25,8 @@ export class MoveDeviceModalComponent implements OnInit {
     toDepartmentId: '',
     reasonId: '',
     note: '',
-    newSticker: ''
+    newSticker: '',
+    representative: ''
   };
 
   constructor() {}
@@ -34,6 +35,11 @@ export class MoveDeviceModalComponent implements OnInit {
   get isReturnReason(): boolean {
     const selectedReason = this.reasons.find(r => r.id === this.formData.reasonId);
     return selectedReason?.code === 'return';
+  }
+  // Геттер для проверки причины "Ремонт"
+  get isRepairReason(): boolean {
+    const selectedReason = this.reasons.find(r => r.id === this.formData.reasonId);
+    return selectedReason?.code === 'repair';
   }
 
   ngOnInit(): void {
@@ -61,12 +67,19 @@ export class MoveDeviceModalComponent implements OnInit {
       toDepartmentId: this.device?.currentDepartmentId || '',
       reasonId: '',
       note: '',
-      newSticker: ''
+      newSticker: '',
+      representative: ''
     };
   }
 
   isFormValid(): boolean {
-    return !!this.formData.toDepartmentId && !!this.formData.reasonId;
+    const baseValid = !!this.formData.toDepartmentId && !!this.formData.reasonId;
+    
+    if (this.isRepairReason || this.isReturnReason) {
+      return baseValid && !!this.formData.representative;
+    }
+
+    return baseValid;
   }
 
   onSave(): void {

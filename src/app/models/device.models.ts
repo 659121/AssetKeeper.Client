@@ -43,6 +43,7 @@ export interface MoveDeviceRequest {
   reasonId: string;
   note?: string | null;
   newSticker?: string | null;
+  representative?: string | null;
 }
 
 // История перемещения устройства
@@ -54,6 +55,7 @@ export interface DeviceMovement {
   reasonCode: string | null;
   reasonName: string | null;
   movedBy: string | null;
+  representative: string | null; 
   note: string | null;
   oldSticker?: string | null;
   newSticker?: string | null;

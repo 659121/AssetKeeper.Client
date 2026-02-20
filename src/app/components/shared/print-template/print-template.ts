@@ -11,7 +11,7 @@ import { PrintTransferData } from '../../../models/base.models';
       <div class="document">
         <h2>АКТ ПЕРЕДАЧИ ОБОРУДОВАНИЯ</h2>
         
-        <!-- 1. Дата и время столбиком справа -->
+        <!-- Дата и время столбиком справа -->
         <div class="doc-meta">
           <p>Дата: <strong>{{ data.movedAt | date:'dd.MM.yyyy' }}</strong></p>
           <p>Время: <strong>{{ data.movedAt | date:'HH:mm' }}</strong></p>
@@ -56,22 +56,19 @@ import { PrintTransferData } from '../../../models/base.models';
           </div>
         }
 
-        <!-- 2. Подписи с надписями сверху -->
+        <!-- Подписи -->
         <div class="signatures">
           <div class="signature-block">
-            <!-- Блок "Передал" -->
             <div class="sign-header">
-              Передал: {{ data.movedBy || '________________' }}
+              Сдал: {{ getIssuerName() }}
             </div>
             <div class="line"></div>
             <p>(подпись)</p>
           </div>
           
           <div class="signature-block">
-             <!-- Блок "Получил" -->
-             <!-- Выводим отдел, так как ФИО получателя в системе обычно нет -->
             <div class="sign-header">
-              Получил: _____________________
+              Принял: {{ getReceiverName() }}
             </div>
             <div class="line"></div>
             <p>(подпись)</p>
@@ -81,108 +78,53 @@ import { PrintTransferData } from '../../../models/base.models';
     </div>
   `,
   styles: [`
-    /* 1. Скрываем на экране */
-    .print-container { 
-      display: none; 
-    }
-
-    /* 2. Стили для печати */
+    .print-container { display: none; }
     @media print {
       .print-container {
-        display: block;
-        position: absolute;
-        top: 0; 
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: white;
-        z-index: 9999;
-        padding: 15mm; 
-        box-sizing: border-box; 
+        display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: white; z-index: 9999; padding: 15mm; box-sizing: border-box;
       }
     }
-
-    /* 3. Стили документа */
-    .document {
-      font-family: 'Times New Roman', serif;
-      font-size: 12pt;
-      color: black;
-      line-height: 1.5;
-    }
-
-    h2 {
-      text-align: center;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-      font-size: 14pt;
-    }
-
+    .document { font-family: 'Times New Roman', serif; font-size: 12pt; color: black; line-height: 1.5; }
+    h2 { text-align: center; text-transform: uppercase; margin-bottom: 20px; font-size: 14pt; }
     .clear { clear: both; }
-
-    /* Дата и время столбиком справа */
-    .doc-meta {
-      float: right;
-      text-align: left; /* Текст слева внутри блока */
-      margin-bottom: 20px;
-      margin-left: 20px;
-    }
-    .doc-meta p {
-      margin: 0 0 5px 0;
-    }
-
-    .info-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-
-    .info-table td {
-      padding: 8px 10px;
-      border: 1px solid black;
-    }
-
-    .info-table .label {
-      width: 30%;
-      background-color: #f0f0f0;
-      font-weight: bold;
-    }
-
-    .note-section {
-      margin-bottom: 30px;
-      padding: 10px;
-      border: 1px dashed black;
-    }
-
-    .signatures {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 50px; /* Отступ от таблицы */
-    }
-
-    .signature-block {
-      width: 45%;
-      text-align: center;
-    }
-
-    /* Надпись над линией */
-    .sign-header {
-      text-align: left;
-      margin-bottom: 30px; /* Отступ до линии подписи */
-      font-weight: normal;
-    }
-
-    .line {
-      border-bottom: 1px solid black;
-      margin-bottom: 5px;
-    }
-    
-    .signature-block p {
-        font-size: 10pt;
-        color: #555;
-        margin: 0;
-    }
+    .doc-meta { float: right; text-align: left; margin-bottom: 20px; margin-left: 20px; }
+    .doc-meta p { margin: 0 0 5px 0; }
+    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    .info-table td { padding: 8px 10px; border: 1px solid black; }
+    .info-table .label { width: 30%; background-color: #f0f0f0; font-weight: bold; }
+    .note-section { margin-bottom: 30px; padding: 10px; border: 1px dashed black; }
+    .signatures { display: flex; justify-content: space-between; margin-top: 50px; }
+    .signature-block { width: 45%; text-align: center; }
+    .sign-header { text-align: left; margin-bottom: 30px; font-weight: normal; }
+    .line { border-bottom: 1px solid black; margin-bottom: 5px; }
+    .signature-block p { font-size: 10pt; color: #555; margin: 0; }
   `]
 })
 export class PrintTemplateComponent {
   @Input() data!: PrintTransferData;
+
+  getIssuerName(): string {
+    // СДАЧА В РЕМОНТ: сдает представитель отдела
+    if (this.data.reasonCode === 'repair') {
+      return this.data.representative || '________________';
+    }
+    // ВОЗВРАТ ИЗ РЕМОНТА: сдает оператор
+    if (this.data.reasonCode === 'return') {
+      return this.data.movedBy || '________________';
+    }
+    return this.data.movedBy || '________________';
+  }
+
+  getReceiverName(): string {
+    // СДАЧА В РЕМОНТ: принимает оператор
+    if (this.data.reasonCode === 'repair') {
+      return this.data.movedBy || '________________';
+    }
+    // ВОЗВРАТ ИЗ РЕМОНТА: принимает представитель отдела
+    if (this.data.reasonCode === 'return') {
+      return this.data.representative || '________________';
+    }
+    return '________________';
+  }
 }

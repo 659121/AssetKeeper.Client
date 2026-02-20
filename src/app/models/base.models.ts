@@ -70,4 +70,6 @@ export interface PrintTransferData {
   movedAt: Date | string;
   movedBy: string | null;
   note?: string | null;
+  representative?: string | null; 
+  reasonCode?: string | null;
 }

@@ -95,6 +95,8 @@ export class DeviceHistoryModalComponent implements OnInit {
       reason: item.reasonName || 'Не указана',
       movedAt: item.movedAt,
       movedBy: item.movedBy,
+      representative: item.representative,
+      reasonCode: item.reasonCode,
       note: item.note
     };
 
@@ -115,6 +117,8 @@ export class DeviceHistoryModalComponent implements OnInit {
       reason: item.reasonName || 'Не указана',
       movedAt: item.movedAt,
       movedBy: item.movedBy,
+      representative: item.representative,
+      reasonCode: item.reasonCode,
       note: item.note
     };
 
