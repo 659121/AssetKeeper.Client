@@ -44,12 +44,12 @@ import { PrintTransferData } from '../../../models/base.models';
             <p class="org-target">ГУ ФССП России по СПб</p>
             
             <div class="permission-row">
-              <span class="underline"></span>
+              <!-- 1. Заполняем ФИО ответственного из данных -->
+              <span class="underline">{{ data.representative || '' }}</span>
               <span class="sub-label">(кому, ФИО ответственного)</span>
             </div>
             
             <div class="permission-row">
-              <!-- Данные выровнены по центру линии -->
               <span class="underline">{{ data.toDepartment }}</span>
               <span class="sub-label">(куда, адресат)</span>
             </div>
@@ -98,8 +98,9 @@ import { PrintTransferData } from '../../../models/base.models';
                   <span class="underline"></span>
                   <span class="sub-label">(подпись)</span>
                 </div>
+                <!-- 2. Статичный текст "Иванов И.И." -->
                 <div class="line-block">
-                  <span class="underline">{{ data.movedBy || '' }}</span>
+                  <span class="underline">Лидановский Ю.В.</span>
                   <span class="sub-label">(Ф.И.О.)</span>
                 </div>
               </div>
@@ -110,10 +111,8 @@ import { PrintTransferData } from '../../../models/base.models';
     </div>
   `,
   styles: [`
-    /* 1. Скрываем на экране */
+    /* ... Стили остаются без изменений ... */
     .print-container { display: none; }
-
-    /* 2. Стили печати */
     @media print {
       .print-container {
         display: block;
@@ -126,16 +125,12 @@ import { PrintTransferData } from '../../../models/base.models';
         box-sizing: border-box;
       }
     }
-
-    /* 3. Стили самого документа */
     .document {
       font-family: 'Times New Roman', Times, serif;
       font-size: 14pt;
       color: black;
       line-height: 1.5;
     }
-
-    /* Шапка */
     .header-org {
       text-align: center;
       font-weight: bold;
@@ -143,8 +138,6 @@ import { PrintTransferData } from '../../../models/base.models';
       margin-bottom: 30px;
       font-size: 12pt;
     }
-
-    /* Заголовок */
     .header-doc {
       text-align: center;
       margin-bottom: 25px;
@@ -159,8 +152,6 @@ import { PrintTransferData } from '../../../models/base.models';
       font-size: 12pt;
       margin-top: 5px;
     }
-
-    /* Мета-данные (Номер и Дата) */
     .doc-meta {
       float: right;
       text-align: left;
@@ -171,8 +162,6 @@ import { PrintTransferData } from '../../../models/base.models';
       margin-bottom: 5px;
     }
     .clear { clear: both; }
-
-    /* Подчеркивание */
     .underline {
       border-bottom: 1px solid black;
       display: inline-block;
@@ -180,8 +169,6 @@ import { PrintTransferData } from '../../../models/base.models';
       text-align: center;
       padding: 0 10px;
     }
-
-    /* --- СТИЛИ ДЛЯ БЛОКА РАЗРЕШЕНИЯ (ИСПРАВЛЕНО) --- */
     .permission-block {
       margin-bottom: 20px;
       text-align: center; 
@@ -191,7 +178,7 @@ import { PrintTransferData } from '../../../models/base.models';
     }
     .org-target {
       font-weight: bold;
-      margin-bottom: 25px !important; /* УВЕЛИЧЕН ОТСТУП */
+      margin-bottom: 25px !important;
     }
     .permission-row {
       display: flex;
@@ -201,17 +188,13 @@ import { PrintTransferData } from '../../../models/base.models';
     }
     .permission-row .underline {
       min-width: 300px; 
-      text-align: center; /* ВЫРАВНИВАНИЕ ПО ЦЕНТРУ */
-      /* Убран padding-left, чтобы центрирование работало корректно */
+      text-align: center;
     }
     .permission-row .sub-label {
       font-size: 10pt;
       color: #555;
       margin-top: 2px;
     }
-    /* ----------------------------------------- */
-
-    /* Таблица */
     .items-table {
       width: 100%;
       border-collapse: collapse;
@@ -226,8 +209,6 @@ import { PrintTransferData } from '../../../models/base.models';
       font-weight: bold;
       text-align: center;
     }
-
-    /* Поля */
     .fields-section {
       margin-top: 20px;
     }
@@ -250,8 +231,6 @@ import { PrintTransferData } from '../../../models/base.models';
       text-align: center;
       margin-top: 2px;
     }
-
-    /* Блок подписи ответственного */
     .signature-row {
       margin-top: 30px;
       display: block;

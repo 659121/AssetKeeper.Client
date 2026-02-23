@@ -477,7 +477,6 @@ export class Inventory implements OnInit {
     }
   }
 
-  // Перемещение устройства
   onMoveDevice(formData: any): void {
     if (!this.selectedDevice) return;
     this.moveModalLoading = true;
@@ -486,6 +485,8 @@ export class Inventory implements OnInit {
       deviceId: this.selectedDevice.id,
       toDepartmentId: formData.toDepartmentId,
       reasonId: formData.reasonId,
+      
+      representative: formData.representative ? formData.representative.trim() : null,
       note: formData.note || null,
       newSticker: formData.newSticker ? formData.newSticker.trim() : null
     };
@@ -495,7 +496,6 @@ export class Inventory implements OnInit {
         this.loadDevices();
         this.onMoveModalCancel();
         this.moveModalLoading = false;
-
         alert('Устройство успешно перемещено');
       },
       error: (error) => {

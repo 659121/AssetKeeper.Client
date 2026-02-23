@@ -80,6 +80,14 @@
                       </div>
                     }
 
+                    <!-- Поле представителя -->
+                    @if (item.representative) {
+                      <div class="history-row">
+                        <span class="history-label">Представитель:</span>
+                        <span class="history-value">{{ item.representative }}</span>
+                      </div>
+                    }
+
                     <!-- Поле стикера -->
                     <div class="history-row">
                       <span class="history-label">Стикер:</span>

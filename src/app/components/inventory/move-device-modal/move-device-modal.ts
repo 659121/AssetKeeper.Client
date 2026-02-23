@@ -24,9 +24,9 @@ export class MoveDeviceModalComponent implements OnInit {
   formData = {
     toDepartmentId: '',
     reasonId: '',
+    representative: '',
     note: '',
-    newSticker: '',
-    representative: ''
+    newSticker: ''
   };
 
   constructor() {}
@@ -66,9 +66,9 @@ export class MoveDeviceModalComponent implements OnInit {
     this.formData = {
       toDepartmentId: this.device?.currentDepartmentId || '',
       reasonId: '',
+      representative: '',
       note: '',
-      newSticker: '',
-      representative: ''
+      newSticker: ''
     };
   }
 
